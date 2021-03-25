@@ -74,7 +74,24 @@ class MicropostsController extends Controller
         ]);
     }
     
+    public function favorite_users()
+    {
+        return $this->belongsToMany(User::class, 'favorite', 'micropost_id', 'user_id' )->withTimestamps();
+    }
     
-    
-    
+    public function favoriteIndex()
+    {
+        $data = [];
+        if (\Auth::check()){
+            $user = \Auth::user();
+            $favoritePosts = $user->feed_favoriteMicroposts()->orderBy('created_at', 'desc')->paginate(10);
+            $data = [
+                'user' => $user,
+                'favoritePosts' => $favoritePosts,
+            ];
+        }
+        
+        return view('users.favorites', $data);
+        
+    }
 }
